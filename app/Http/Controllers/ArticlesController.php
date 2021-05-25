@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 class ArticlesController extends Controller
 {
 
-
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +20,11 @@ class ArticlesController extends Controller
 
         //get data from DB
         //return view('articles.index', ['articles' => ArticleModel::orderBy('created_at', 'desc')->take(6)->get()]);
-        return view('articles.index', ['articles' => ArticleModel::all()]);
+        // return view('articles.index', ['articles' => ArticleModel::all()]);
+
+        return view('articles.index',
+            ['articles' => ArticleModel::withCount('comments')->get()]);
+
     }
 
     /**
@@ -44,7 +47,7 @@ class ArticlesController extends Controller
     public function store(StoreArticles $request)
     {
         // validate data from StoreArticle
-        $validated= $request ->validated();
+        $validated = $request->validated();
 
         // call Model
         $article = new ArticleModel();
@@ -57,11 +60,10 @@ class ArticlesController extends Controller
         // modify
         $article = ArticleModel::create($validated);
 
-
-        $request ->session()->flash('status', 'The article was created');
+        $request->session()->flash('status', 'The article was created');
 
         // redirect to created post
-        return redirect()->route('articles.show', ['article'=> $article->id]);
+        return redirect()->route('articles.show', ['article' => $article->id]);
 
     }
 
@@ -73,13 +75,12 @@ class ArticlesController extends Controller
      */
     public function show($id)
     {
-       // abort_if(!isset($this->news[$id]), 404);
+        // abort_if(!isset($this->news[$id]), 404);
 
         //return view('articles.show', ['article' => $this->news[$id]]);
 
         // data from DB
         return view('articles.show', ['article' => ArticleModel::findOrFail($id)]);
-
 
     }
 
@@ -91,7 +92,7 @@ class ArticlesController extends Controller
      */
     public function edit($id)
     {
-       return view('articles.edit', ['article'=> ArticleModel::findOrFail($id)]);
+        return view('articles.edit', ['article' => ArticleModel::findOrFail($id)]);
 
     }
 
@@ -107,11 +108,11 @@ class ArticlesController extends Controller
         // check if article exists
         $article = ArticleModel::findOrFail($id);
         $validated = $request->validated();
-        $article ->fill($validated);
-        $article ->save();
+        $article->fill($validated);
+        $article->save();
 
         $request->session()->flash('status', 'The article was Updated');
-        return redirect()->route('articles.show', ['article'=> $article->id]);
+        return redirect()->route('articles.show', ['article' => $article->id]);
 
     }
 
@@ -124,16 +125,16 @@ class ArticlesController extends Controller
     public function destroy($id)
     {
         // get data when clicked
-       $article = ArticleModel::findOrFail($id);
+        $article = ArticleModel::findOrFail($id);
 
-       // delete data from DB
-       $article->delete();
+        // delete data from DB
+        $article->delete();
 
-       // show message
-       session()->flash('status', 'Article has been deleted');
+        // show message
+        session()->flash('status', 'Article has been deleted');
 
-       // redirect
-       return redirect()->route('articles.index');
+        // redirect
+        return redirect()->route('articles.index');
 
     }
 }
