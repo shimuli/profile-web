@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 class ArticlesController extends Controller
 {
 
+    public function __construct(){
+        $this ->middleware('auth')->only(['create', 'store', 'edit','destroy']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -80,7 +83,7 @@ class ArticlesController extends Controller
         //return view('articles.show', ['article' => $this->news[$id]]);
 
         // data from DB
-        return view('articles.show', ['article' => ArticleModel::findOrFail($id)]);
+        return view('articles.show', ['article' => ArticleModel::with('comments')->findOrFail($id)]);
 
     }
 

@@ -10,6 +10,12 @@
         <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/kelly-free-bootstrap-cv-resume-html-template/ --> --}}
 
         </div>
+         <div class="header-social-links">
+                <a href="" class="twitter"><i class="bi bi-twitter"></i></a>
+                <a href="" class="facebook"><i class="bi bi-facebook"></i></a>
+                <a href="" class="instagram"><i class="bi bi-instagram"></i></a>
+                <a href="" class="linkedin"><i class="bi bi-linkedin"></i></i></a>
+            </div>
     </div>
 </footer>
 {{--  <div id="preloader"></div>  --}}

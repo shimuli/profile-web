@@ -14,15 +14,16 @@
         href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
         rel="stylesheet">
 
-       {{--  Vendor CSS Files  --}}
+    {{-- Vendor CSS Files --}}
     <link href="{{ asset('css/vendor/aos/aos.css') }}" rel="stylesheet">
     <link href="{{ asset('css/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
     <link href="{{ asset('css/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}" rel="stylesheet">
 
-    {{--  Js  --}}
+    {{-- Js --}}
     <script src="{{ mix('js/app.js') }}" defer></script>
     <title>Cedric Shimuli - @yield('title') </title>
 </head>
@@ -32,8 +33,8 @@
         <div class="container-fluid d-flex justify-content-between align-items-center">
 
             <h1 class="logo me-auto me-lg-0"><a href="{{ route('home.index') }}">Cedric</a></h1>
-            {{--  <!-- Uncomment below if you prefer to use an image logo -->  --}}
-            {{--  <a href="index.html" class="logo"><img src="{{ asset('img/favicon.png') }}" alt="" class="img-fluid"></a>  --}}
+            {{-- <!-- Uncomment below if you prefer to use an image logo --> --}}
+            {{-- <a href="index.html" class="logo"><img src="{{ asset('img/favicon.png') }}" alt="" class="img-fluid"></a> --}}
 
             <nav id="navbar" class="navbar order-last order-lg-0">
                 <ul>
@@ -42,18 +43,26 @@
                     <li><a href="{{ route('services.index') }}">Projects</a></li>
                     <li><a href="{{ route('articles.index') }}">Blogs</a></li>
                     <li><a href="{{ route('home.contact') }}">Contact</a></li>
-                    <li><a href="{{ route('articles.create')}}">Create Article</a></li>
+                    <li><a href="{{ route('articles.create') }}">Create Article</a></li>
                 </ul>
                 <i class="bi bi-list mobile-nav-toggle"></i>
-            </nav><!-- .navbar -->
 
-            <div class="header-social-links">
-                <a href="" class="twitter"><i class="bi bi-twitter"></i></a>
-                <a href="" class="facebook"><i class="bi bi-facebook"></i></a>
-                <a href="" class="instagram"><i class="bi bi-instagram"></i></a>
-                <a href="" class="linkedin"><i class="bi bi-linkedin"></i></i></a>
-            </div>
+                @guest
+                    @if (Route::has('register'))
+                        <a class="p-2 text-dark" href="{{ route('register') }}">Register</a>
+                    @endif
 
+                    <a class="p-2 text-dark" href="{{ route('login') }}">Login</a>
+                @else
+
+                    <a class="p-2 text-dark" href="{{ route('logout') }}" onclick="event.preventDefault();
+                    document.getElementById('logout-form').submit();">Logout - {{Auth::user()->name}}</a>
+
+                    <form action="{{ route('logout') }}" method="POST" id="logout-form" style="display: none">
+                        @csrf
+                    </form>
+                @endguest
+            </nav>
         </div>
 
     </header><!-- End Header -->
@@ -63,7 +72,7 @@
         @endif
         @yield('content')
     </div>
-    
+
 </body>
 
 </html>
