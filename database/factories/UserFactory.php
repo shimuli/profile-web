@@ -30,4 +30,13 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
+
+     public function AdminUser()
+    {
+        return $this->state([
+            'name' => 'Cedric Shimuli',
+            'email'=> 'cedricgyan@gmail.com'
+            // 'content' => 'Content of the blog post',
+        ]);
+    }
 }
