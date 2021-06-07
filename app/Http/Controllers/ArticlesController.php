@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreArticles;
 use App\Models\ArticleModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ArticlesController extends Controller
 {
 
-    public function __construct(){
-        $this ->middleware('auth')->only(['create', 'store', 'edit','destroy']);
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['create', 'store', 'edit', 'destroy']);
     }
     /**
      * Display a listing of the resource.
@@ -95,6 +97,17 @@ class ArticlesController extends Controller
      */
     public function edit($id)
     {
+        $article = ArticleModel::findOrFail($id);
+
+        //use Gate
+        // if (Gate::denies('update-article', $article)) {
+        //     abort(403, "You cannot edit this post");
+        // }
+
+        // using auth
+        $this->authorize('delete-article', $article);
+
+
         return view('articles.edit', ['article' => ArticleModel::findOrFail($id)]);
 
     }
@@ -127,8 +140,18 @@ class ArticlesController extends Controller
      */
     public function destroy($id)
     {
+
         // get data when clicked
         $article = ArticleModel::findOrFail($id);
+
+         //use Gate
+        // if (Gate::denies('delete-article', $article)) {
+        //     abort(403, "You cannot delete this post");
+        // }
+
+        // using auth
+        $this->authorize('delete-article', $article);
+
 
         // delete data from DB
         $article->delete();

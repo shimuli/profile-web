@@ -14,7 +14,7 @@
                 <p>0 comments</p>
             @endif
             <h4><a href="{{ route('articles.show', ['article' => $article->id]) }}">{{ $article->title }}</a> </h4>
-            <small class="text-muted">By <a href="#"><strong> Cedric Shimuli</strong></a> | <p>
+            <small class="text-muted">By <a href="#"><strong>{{ $article->user->name }}</strong></a> | <p>
                     {{ $article->created_at->diffForHumans() }}</p> </small>
         </div>
     </div>
