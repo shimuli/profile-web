@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ArticleModel;
 use App\Models\Comments;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class CommentsTableSeeder extends Seeder
@@ -23,9 +24,12 @@ class CommentsTableSeeder extends Seeder
         }
         $CommentCount = (int) $this->command->ask('How many dummy comments would you want to add', 2000);
 
+        $users = User::all();
+
 // creating random
-        Comments::factory()->times($CommentCount)->make()->each(function ($comment) use ($posts) {
+        Comments::factory()->times($CommentCount)->make()->each(function ($comment) use ($posts, $users) {
             $comment->article_model_id = $posts->random()->id;
+            $comment->user_id = $users->random()->id;
             $comment->save();
         });
 

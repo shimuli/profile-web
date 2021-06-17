@@ -14,7 +14,7 @@
                 <h2 class=" mt-20">Register</h2>
             </div>
 
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
                  @csrf
                 <div class="form-group row">
                     <label for="name" class="col-sm-2 col-form-label">Name</label>

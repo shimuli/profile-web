@@ -3,8 +3,10 @@
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostCommentController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\ServicesController;
+use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +51,11 @@ Route::resource('articles', ArticlesController::class);
 Route::resource('about', AboutController::class);
 Route::resource('resume', ResumeController::class);
 Route::resource('services', ServicesController::class);
+Route::get('articles/tag/{tag}', [TagController::class, 'index'])->name('articles.tags.index');
+
+Route::resource('articles.comments', PostCommentController::class)->only(['store']);
+
+
 Auth::routes();
 // ->only(['index], 'show'), 'create', 'store']);
 

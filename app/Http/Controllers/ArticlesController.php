@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreArticles;
 use App\Models\ArticleModel;
+use App\Models\Image;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class ArticlesController extends Controller
 {
@@ -27,8 +30,15 @@ class ArticlesController extends Controller
         //return view('articles.index', ['articles' => ArticleModel::orderBy('created_at', 'desc')->take(6)->get()]);
         // return view('articles.index', ['articles' => ArticleModel::all()]);
 
+        // cache file
+        $mostCommented = Cache::remember('blog-post-most-commented ', now()->addSeconds(60), function () {
+            return ArticleModel::mostCommented()->take(5)->get();
+        });
+
         return view('articles.index',
-            ['articles' => ArticleModel::withCount('comments')->get()]);
+            ['articles' => ArticleModel::latest()->withCount('comments')->with('tags')->with('user')->get(),
+                'mostCommented' => $mostCommented,
+            ]);
 
     }
 
@@ -53,6 +63,7 @@ class ArticlesController extends Controller
     {
         // validate data from StoreArticle
         $validated = $request->validated();
+        $validated['user_id'] = $request->user()->id;
 
         // call Model
         $article = new ArticleModel();
@@ -64,6 +75,16 @@ class ArticlesController extends Controller
 
         // modify
         $article = ArticleModel::create($validated);
+
+        // image upload
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('thumbnails');
+            $article->image()->save(
+                Image::create([
+                    'path' => $path,
+                ])
+            );
+        }
 
         $request->session()->flash('status', 'The article was created');
 
@@ -85,7 +106,15 @@ class ArticlesController extends Controller
         //return view('articles.show', ['article' => $this->news[$id]]);
 
         // data from DB
-        return view('articles.show', ['article' => ArticleModel::with('comments')->findOrFail($id)]);
+        $blogPost =
+        Cache::remember("blog-post-{$id}", 60, function () use ($id) {
+            return ArticleModel::with('comments')->with('tags')->findOrFail($id);
+        });
+
+        return view('articles.show',
+            [
+                'article' => ArticleModel::with('comments')->with('tags')->findOrFail($id),
+            ]);
 
     }
 
@@ -105,8 +134,7 @@ class ArticlesController extends Controller
         // }
 
         // using auth
-        $this->authorize('delete-article', $article);
-
+        $this->authorize($article);
 
         return view('articles.edit', ['article' => ArticleModel::findOrFail($id)]);
 
@@ -124,7 +152,27 @@ class ArticlesController extends Controller
         // check if article exists
         $article = ArticleModel::findOrFail($id);
         $validated = $request->validated();
+
         $article->fill($validated);
+        // image upload
+        if ($request->hasFile('thumbnail')) {
+            $path = $request->file('thumbnail')->store('thumbnails');
+
+            if ($article->image) {
+                Storage::delete($article->image->path);
+                $article->image->path = $path;
+                $article->image->save();
+            } else {
+                $article->image()->save(
+                    Image::create([
+                        'path' => $path,
+                    ])
+                );
+
+            }
+
+        }
+
         $article->save();
 
         $request->session()->flash('status', 'The article was Updated');
@@ -144,14 +192,13 @@ class ArticlesController extends Controller
         // get data when clicked
         $article = ArticleModel::findOrFail($id);
 
-         //use Gate
+        //use Gate
         // if (Gate::denies('delete-article', $article)) {
         //     abort(403, "You cannot delete this post");
         // }
 
         // using auth
-        $this->authorize('delete-article', $article);
-
+        $this->authorize($article);
 
         // delete data from DB
         $article->delete();

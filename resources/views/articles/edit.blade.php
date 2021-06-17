@@ -7,7 +7,7 @@
 <br>
 <br>
 <br>
-<form class="container" action="{{ route('articles.update', ['article' => $article->id]) }}" method="POST">
+<form class="container" action="{{ route('articles.update', ['article' => $article->id]) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     @include('articles.partials.form')

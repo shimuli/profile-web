@@ -9,7 +9,7 @@
 <br>
 <br>
 <br>
-<form class="container" action="{{ route('articles.store') }}" method="POST">
+<form class="container" action="{{ route('articles.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     @include('articles.partials.form')
     <div>
